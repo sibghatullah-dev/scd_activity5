@@ -1,9 +1,9 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:18'        // Use official Node.js image
-            args '-u root'         // Run as root (so you can install packages if needed)
-        }
+    agent any
+
+    tools {
+        nodejs 'NodeJS'
+        git 'Default'
     }
 
     parameters {
@@ -28,10 +28,21 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                echo "Installing required npm packages..."
+                echo "Installing required packages..."
                 sh '''
-                    node -v
-                    npm -v
+                    echo "Fixing permission issues and installing libatomic..."
+                    if [ "$(id -u)" -ne 0 ]; then
+                        echo "Running as non-root user, using sudo if available..."
+                        if command -v sudo >/dev/null 2>&1; then
+                            sudo apt-get update && sudo apt-get install -y libatomic1
+                        else
+                            echo "Sudo not found. Please install libatomic1 manually."
+                        fi
+                    else
+                        apt-get update && apt-get install -y libatomic1
+                    fi
+
+                    echo "Installing npm dependencies..."
                     npm install
                 '''
             }
