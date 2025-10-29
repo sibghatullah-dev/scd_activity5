@@ -1,9 +1,9 @@
 pipeline {
-    agent any
-
-    tools {
-        nodejs 'NodeJS'
-        git 'Default'
+    agent {
+        docker {
+            image 'node:18'        // Use official Node.js image
+            args '-u root'         // Run as root (so you can install packages if needed)
+        }
     }
 
     parameters {
@@ -28,17 +28,10 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                echo "Installing required packages..."
+                echo "Installing required npm packages..."
                 sh '''
-                    echo "Checking for required system libraries..."
-                    if ! ldconfig -p | grep -q libatomic.so.1; then
-                        echo "libatomic1 not found. Installing..."
-                        apt-get update && apt-get install -y libatomic1
-                    else
-                        echo "libatomic1 already installed."
-                    fi
-
-                    echo "Installing npm dependencies..."
+                    node -v
+                    npm -v
                     npm install
                 '''
             }
