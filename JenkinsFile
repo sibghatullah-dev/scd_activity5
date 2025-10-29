@@ -41,7 +41,7 @@ echo "Simulating build process..."
 mkdir -p build
 cp *.js build/
 echo "Build completed successfully!"
-echo "App version: ${APP_VERSION}" &gt; build/version.txt
+echo "App version: ${APP_VERSION}" > build/version.txt
 '''
 }
 }
